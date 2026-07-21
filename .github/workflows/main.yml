@@ -17,11 +17,9 @@ jobs:
     - name: Run AutoHotKey compiler to generate binary
       run: |
         powershell.exe .\AutoHotKey\Compiler\Ahk2Exe.exe /in LiveEnhancementSuite.ahk /out "Live Enhancement Suite.exe" /icon resources\blueico.ico
-    - name: Install Inno Setup for Installer Creation
-      run: |
-        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile innosetup.exe
-        Start-Process -FilePath ".\innosetup.exe" -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART" -Wait
-    - name: Run Inno Setup script to generate installer
-      run: |
-        $InnoSetupCmdLocation="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-        & $InnoSetupCmdLocation /q innoSetupScript.iss
+    - name: Upload compiled executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: Live Enhancement Suite
+        path: Live Enhancement Suite.exe
+        if-no-files-found: error

@@ -1180,8 +1180,8 @@ tempautoadd := autoadd
 If (tempautoadd = 1){
 sleep, 112
 WinGetActiveTitle, wintitleoutput
-if !(InStr(wintitleoutput, "Live 12", CaseSensitive := false) = 0){ ; Live 12 reworked the browser search results, so an extra down keystroke is needed to land on the first result before loading it.
-Send,{down}{down}{enter}
+if !(InStr(wintitleoutput, "Live 12", CaseSensitive := false) = 0){ ; Live 12 reworked the browser search: pressing enter twice (with no arrow keys) loads the first result.
+Send,{enter}{enter}
 }
 Else{
 Send,{down}{enter}

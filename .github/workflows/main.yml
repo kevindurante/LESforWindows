@@ -8,26 +8,19 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Clone GitHub repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Download and extract AutoHotKey
       run: |
-        powershell.exe curl https://autohotkey.com/download/ahk.zip -o ahk.zip
-        powershell.exe Expand-Archive -Path ahk.zip -DestinationPath .\AutoHotKey\ -Verbose
-        powershell.exe ls
-        powershell.exe ls .\AutoHotKey
-        powershell.exe ls .\AutoHotKey\Compiler
-      #  powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('ahk.zip', 'AutoHotKey'); }"
+        Invoke-WebRequest -Uri "https://github.com/AutoHotkey/AutoHotkey/releases/download/v1.1.37.02/AutoHotkey_1.1.37.02.zip" -OutFile ahk.zip
+        Expand-Archive -Path ahk.zip -DestinationPath .\AutoHotKey\ -Force
+        Get-ChildItem .\AutoHotKey\Compiler
     - name: Run AutoHotKey compiler to generate binary
       run: |
-        powershell.exe .\AutoHotKey\Compiler\Ahk2Exe.exe /in LiveEnhancementSuite.ahk /out "Live Enhancement Suite.exe" /icon resources\blueico.ico
-    - name: Install Inno Setup 6.0.4 for Installer Creation
-      run: |
-        powershell.exe ls
-        powershell.exe ls .\AutoHotKey
-        powershell.exe ls .\AutoHotKey\Compiler
-        powershell.exe curl http://files.jrsoftware.org/is/6/innosetup-6.0.4.exe -o innosetup-6.0.4.exe
-        ./innosetup-6.0.4.exe /VERYSILENT /SUPPRESSMSGBOXES
-    - name: Run Inno Setup script to generate installer
-      run: |
-        $InnoSetupCmdLocation="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
-        & $InnoSetupCmdLocation /q innoSetupScript.iss
+        Start-Process -FilePath ".\AutoHotKey\Compiler\Ahk2Exe.exe" -ArgumentList '/in','LiveEnhancementSuite.ahk','/out','Live Enhancement Suite.exe','/icon','resources\blueico.ico' -Wait -NoNewWindow
+        if (-not (Test-Path "Live Enhancement Suite.exe")) { throw "Ahk2Exe did not produce the exe" }
+    - name: Upload compiled executable
+      uses: actions/upload-artifact@v4
+      with:
+        name: Live Enhancement Suite
+        path: Live Enhancement Suite.exe
+        if-no-files-found: error

@@ -66,7 +66,7 @@ jobs:
         shell: powershell
         run: |
           $ErrorActionPreference = "Stop"
-          & "$env:AHK2EXE" /in "LiveEnhancementSuite.ahk" /out "Live Enhancement Suite.exe" /icon "resources\blueico.ico"
+          Start-Process -FilePath "$env:AHK2EXE" -ArgumentList '/in','LiveEnhancementSuite.ahk','/out','Live Enhancement Suite.exe','/icon','resources\blueico.ico' -Wait -NoNewWindow
           if (-not (Test-Path "Live Enhancement Suite.exe")) { throw "Compilation did not produce the exe" }
           Write-Host "Compiled Live Enhancement Suite.exe"
 

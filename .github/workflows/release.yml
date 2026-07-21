@@ -17,7 +17,9 @@ jobs:
         Expand-Archive -Path ahk.zip -DestinationPath .\AutoHotKey\ -Force
         Get-ChildItem .\AutoHotKey\Compiler
     - name: Run AutoHotKey compiler to generate binary
-      run:  powershell.exe .\AutoHotKey\Compiler\Ahk2Exe.exe /in LiveEnhancementSuite.ahk /out "Live Enhancement Suite.exe" /icon resources\blueico.ico
+      run: |
+        Start-Process -FilePath ".\AutoHotKey\Compiler\Ahk2Exe.exe" -ArgumentList '/in','LiveEnhancementSuite.ahk','/out','Live Enhancement Suite.exe','/icon','resources\blueico.ico' -Wait -NoNewWindow
+        if (-not (Test-Path "Live Enhancement Suite.exe")) { throw "Ahk2Exe did not produce the exe" }
     - name: Package portable executable with checksum
       run: |
         CertUtil -hashfile "Live Enhancement Suite.exe" SHA256 | Select -SkipLast 1 >> chksm

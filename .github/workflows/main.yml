@@ -16,7 +16,8 @@ jobs:
         Get-ChildItem .\AutoHotKey\Compiler
     - name: Run AutoHotKey compiler to generate binary
       run: |
-        powershell.exe .\AutoHotKey\Compiler\Ahk2Exe.exe /in LiveEnhancementSuite.ahk /out "Live Enhancement Suite.exe" /icon resources\blueico.ico
+        Start-Process -FilePath ".\AutoHotKey\Compiler\Ahk2Exe.exe" -ArgumentList '/in','LiveEnhancementSuite.ahk','/out','Live Enhancement Suite.exe','/icon','resources\blueico.ico' -Wait -NoNewWindow
+        if (-not (Test-Path "Live Enhancement Suite.exe")) { throw "Ahk2Exe did not produce the exe" }
     - name: Upload compiled executable
       uses: actions/upload-artifact@v4
       with:

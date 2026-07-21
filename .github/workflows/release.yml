@@ -10,23 +10,18 @@ jobs:
     runs-on: windows-latest
     steps:
     - name: Clone GitHub repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Download and extract AutoHotKey
       run: |
-        powershell.exe curl https://autohotkey.com/download/ahk.zip -o ahk.zip
-        powershell.exe Expand-Archive -Path ahk.zip -DestinationPath .\AutoHotKey\ -Verbose
-        powershell.exe ls
-        powershell.exe ls .\AutoHotKey
-        powershell.exe ls .\AutoHotKey\Compiler
+        Invoke-WebRequest -Uri "https://github.com/AutoHotkey/AutoHotkey/releases/download/v1.1.37.02/AutoHotkey_1.1.37.02.zip" -OutFile ahk.zip
+        Expand-Archive -Path ahk.zip -DestinationPath .\AutoHotKey\ -Force
+        Get-ChildItem .\AutoHotKey\Compiler
     - name: Run AutoHotKey compiler to generate binary
       run:  powershell.exe .\AutoHotKey\Compiler\Ahk2Exe.exe /in LiveEnhancementSuite.ahk /out "Live Enhancement Suite.exe" /icon resources\blueico.ico
-    - name: Install Inno Setup 6.0.4 for Installer Creation
+    - name: Install Inno Setup for Installer Creation
       run: |
-        powershell.exe ls
-        powershell.exe ls .\AutoHotKey
-        powershell.exe ls .\AutoHotKey\Compiler
-        powershell.exe curl http://files.jrsoftware.org/is/6/innosetup-6.0.4.exe -o innosetup-6.0.4.exe
-        ./innosetup-6.0.4.exe /VERYSILENT /SUPPRESSMSGBOXES
+        Invoke-WebRequest -Uri "https://jrsoftware.org/download.php/is.exe" -OutFile innosetup.exe
+        Start-Process -FilePath ".\innosetup.exe" -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/SP-","/NORESTART" -Wait
     - name: Run Inno Setup script and generate checksums
       run: |
         $InnoSetupCmdLocation="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
